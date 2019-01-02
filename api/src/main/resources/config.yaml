@@ -16,7 +16,7 @@ kumuluzee:
   health:
     checks:
       data-source-health-check:
-        jndi-name: jdbc/Share
+        jndi-name: jdbc/ShareDS
   config:
     etcd:
       hosts: http://localhost:2379
