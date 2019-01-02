@@ -1,0 +1,1 @@
+# share-management-service
