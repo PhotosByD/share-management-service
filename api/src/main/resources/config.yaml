@@ -1,0 +1,33 @@
+kumuluzee:
+  name: chare-management-service
+  env:
+    name: dev
+  version: 1.0.0
+  server:
+    base-url: http://localhost:8084
+    http:
+      port: 8084
+  datasources:
+    - jndi-name: jdbc/ShareDS
+      connection-url: jdbc:postgresql://localhost:5432/share
+      username: dbuser
+      password: postgres
+      max-pool-size: 20
+  health:
+    checks:
+      data-source-health-check:
+        jndi-name: jdbc/Share
+  config:
+    etcd:
+      hosts: http://localhost:2379
+  discovery:
+    etcd:
+      hosts: http://localhost:2379
+  metrics:
+    web-instrumentation:
+      - name: shares-endpoint
+        url-pattern: /v1/shares/*
+app-properties:
+  external-services:
+    enabled: true
+  healthy: true
