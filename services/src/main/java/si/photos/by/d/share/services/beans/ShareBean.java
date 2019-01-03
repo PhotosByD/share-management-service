@@ -1,19 +1,28 @@
 package si.photos.by.d.share.services.beans;
 
+import com.kumuluz.ee.discovery.annotations.DiscoverService;
 import com.kumuluz.ee.rest.beans.QueryParameters;
 import com.kumuluz.ee.rest.utils.JPAUtils;
+import si.photos.by.d.share.models.dtos.Photo;
 import si.photos.by.d.share.models.entities.Share;
+import si.photos.by.d.share.services.configuration.AppProperties;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.UriInfo;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 @RequestScoped
@@ -23,7 +32,14 @@ public class ShareBean {
     @Inject
     private EntityManager em;
 
+    @Inject
+    private AppProperties appProperties;
+
     private Client httpClient;
+
+    @Inject
+    @DiscoverService("photo-management-service")
+    private Optional<String> photoUrl;
 
     @PostConstruct
     private void init() {
@@ -53,18 +69,20 @@ public class ShareBean {
         return share;
     }
 
-    public List<Share> getSharesForUser(Integer id) {
+    public List<Photo> getSharedPhotosForUser(Integer id) {
+        List<Photo> result = new ArrayList<>();
         TypedQuery<Share> query = em.createQuery("SELECT s FROM share s WHERE s.userId = :id", Share.class);
         query.setParameter("id", id);
 
-        return query.getResultList();
-    }
+        List<Share> sharedPhotos = query.getResultList();
+        if (sharedPhotos.isEmpty()) {
+            throw new NotFoundException();
+        }
 
-    public List<Share> getSharesForPhoto(Integer id) {
-        TypedQuery<Share> query = em.createQuery("SELECT s FROM share s WHERE s.photoId = :id", Share.class);
-        query.setParameter("id", id);
-
-        return query.getResultList();
+        for (Share s : sharedPhotos){
+            result.add(getPhoto(s.getPhotoId()));
+        }
+        return result;
     }
 
     public Share createShare(Share share) {
@@ -129,5 +147,20 @@ public class ShareBean {
     private void rollbackTx() {
         if (em.getTransaction().isActive())
             em.getTransaction().rollback();
+    }
+
+    private Photo getPhoto(Integer photoId) {
+        if (appProperties.isExternalServicesEnabled() && photoUrl.isPresent()) {
+            try {
+                return httpClient
+                        .target(photoUrl.get() + "/v1/photos?where=id:EQ:" + photoId)
+                        .request().get(new GenericType<Photo>() {
+                        });
+            } catch (WebApplicationException | ProcessingException e) {
+                log.severe(e.getMessage());
+                throw new InternalServerErrorException(e);
+            }
+        }
+        return null;
     }
 }

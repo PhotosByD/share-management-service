@@ -1,5 +1,6 @@
 package si.photos.by.d.share.api.v1.resources;
 import com.kumuluz.ee.logs.cdi.Log;
+import si.photos.by.d.share.models.dtos.Photo;
 import si.photos.by.d.share.models.entities.Share;
 import si.photos.by.d.share.services.beans.ShareBean;
 
@@ -33,14 +34,8 @@ public class ShareResource {
 
     @GET
     @Path("/user/{userId}")
-    public Response getSharesForUser(@PathParam("userId") Integer userId) {
-        List<Share> shares = shareBean.getSharesForUser(userId);
-        return Response.ok(shares).build();
-    }
-    @GET
-    @Path("/photo/{photoId}")
-    public Response getSharesForPhoto(@PathParam("photoId") Integer photoId) {
-        List<Share> shares = shareBean.getSharesForPhoto(photoId);
+    public Response getSharedPhotosForUser(@PathParam("userId") Integer userId) {
+        List<Photo> shares = shareBean.getSharedPhotosForUser(userId);
         return Response.ok(shares).build();
     }
 
