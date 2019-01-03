@@ -17,6 +17,8 @@ kumuluzee:
     checks:
       data-source-health-check:
         jndi-name: jdbc/ShareDS
+      disk-space-health-check:
+        threshold: 100000000
   config:
     etcd:
       hosts: http://localhost:2379
@@ -27,6 +29,22 @@ kumuluzee:
     web-instrumentation:
       - name: shares-endpoint
         url-pattern: /v1/shares/*
+  logs:
+    config-file: '<?xml version="1.0" encoding="UTF-8"?>
+                    <Configuration name="share-service">
+                        <Appenders>
+                            <Console name="console" target="SYSTEM_OUT">
+                                <PatternLayout pattern="%d %p %marker %m %X %ex %n"/>
+                            </Console>
+                        </Appenders>
+                        <Loggers>
+                            <!-- Default logger -->
+                            <Root level="all">
+                                <AppenderRef ref="console" level="info"/>
+                                <AppenderRef ref="logstash" level="trace"/>
+                            </Root>
+                        </Loggers>
+                    </Configuration>'
 app-properties:
   external-services:
     enabled: true

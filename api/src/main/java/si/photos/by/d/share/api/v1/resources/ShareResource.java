@@ -34,7 +34,7 @@ public class ShareResource {
     @GET
     @Path("/user/{userId}")
     public Response getSharesForUser(@PathParam("userId") Integer userId) {
-        List<Share> shares = shareBean.getsharesForUser(userId);
+        List<Share> shares = shareBean.getSharesForUser(userId);
         return Response.ok(shares).build();
     }
     @GET

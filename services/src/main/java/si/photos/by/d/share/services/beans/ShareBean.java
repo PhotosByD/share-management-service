@@ -53,7 +53,7 @@ public class ShareBean {
         return share;
     }
 
-    public List<Share> getsharesForUser(Integer id) {
+    public List<Share> getSharesForUser(Integer id) {
         TypedQuery<Share> query = em.createQuery("SELECT s FROM share s WHERE s.userId = :id", Share.class);
         query.setParameter("id", id);
 
