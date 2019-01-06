@@ -153,7 +153,7 @@ public class ShareBean {
         if (appProperties.isExternalServicesEnabled() && photoUrl.isPresent()) {
             try {
                 return httpClient
-                        .target(photoUrl.get() + "/v1/photos?where=id:EQ:" + photoId)
+                        .target(photoUrl.get() + "/v1/photos/" + photoId)
                         .request().get(new GenericType<Photo>() {
                         });
             } catch (WebApplicationException | ProcessingException e) {

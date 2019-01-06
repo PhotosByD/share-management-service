@@ -5,6 +5,7 @@ public class Photo {
     private Integer id;
     private String title;
     private Integer userId;
+    private String photoURL;
 
     public Integer getId() {
         return id;
@@ -28,5 +29,13 @@ public class Photo {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    public String getPhotoURL() {
+        return photoURL;
+    }
+
+    public void setPhotoURL(String photoURL) {
+        this.photoURL = photoURL;
     }
 }
