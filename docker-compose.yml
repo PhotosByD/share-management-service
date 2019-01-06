@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: share
   share-service:
-    image: photosbyd/share-service:0.3
+    image: photosbyd/share-service:0.5
     ports:
       - 8084:8084
     environment:

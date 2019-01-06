@@ -13,7 +13,7 @@ spec:
         app: share
     spec:
       containers:
-        - image: photosbyd/share-service:0.4
+        - image: photosbyd/share-service:0.5
           name: share
           env:
             - name: KUMULUZEE_DISCOVERY_CLUSTER

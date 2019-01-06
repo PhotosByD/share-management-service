@@ -1,5 +1,5 @@
 kumuluzee:
-  name: chare-management-service
+  name: share-management-service
   env:
     name: dev
   version: 1.0.0
