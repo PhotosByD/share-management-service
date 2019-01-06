@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: share-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: share
+  template:
+    metadata:
+      labels:
+        app: share
+    spec:
+      containers:
+        - image: photosbyd/share-service:0.3
+          name: share
+          env:
+            - name: KUMULUZEE_DISCOVERY_CLUSTER
+              value: private-coreos
+            - name: KUMULUZEE_DISCOVERY_ETCD_HOSTS
+              value: http://etcd:2379
+            - name: KUMULUZEE_CONFIG_ETCD_HOSTS
+              value: http://etcd:2379
+            - name: KUMULUZEE_SERVER_BASEURL
+              value: http://159.122.179.27:30026
+            - name: KUMULUZEE_DATASOURCES0_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pg-pass
+                  key: KUMULUZEE_DATASOURCES0_PASSWORD
+            - name: KUMULUZEE_DATASOURCES0_CONNECTIONURL
+              value: jdbc:postgresql://sl-eu-gb-p02.dblayer.com:15881/compose
+            - name: KUMULUZEE_DATASOURCES0_USERNAME
+              value: admin
+          ports:
+            - containerPort: 8083
+              name: server
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: server
+            initialDelaySeconds: 20
+            periodSeconds: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: share
+spec:
+  type: NodePort
+  ports:
+    - port: 8083
+      protocol: TCP
+      targetPort: 8083
+  selector:
+    app: share
