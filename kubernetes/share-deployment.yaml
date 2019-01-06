@@ -34,7 +34,7 @@ spec:
             - name: KUMULUZEE_DATASOURCES0_USERNAME
               value: admin
           ports:
-            - containerPort: 8083
+            - containerPort: 8084
               name: server
               protocol: TCP
           livenessProbe:
@@ -51,8 +51,8 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - port: 8083
+    - port: 8084
       protocol: TCP
-      targetPort: 8083
+      targetPort: 8084
   selector:
     app: share
